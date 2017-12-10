@@ -38,17 +38,18 @@ class HttpData {
      * @params url string api请求地址
      * @return object promise object
      * */
-    static fetchApiListData(url,question_num) {
+    static fetchApiListData(url) {
         return fetch(url)
             .then((response)=>response.json())
             .then(
                 (responseJson)=> {
                     let entities = responseJson;
                     // 产生规定数目的随机数
-                    let randomData = this._generateRandom(question_num,entities.length);
+                    //let randomData = this._generateRandom(question_num,entities.length);
                     // 根据随机数获取对应的题目数据
-                    let questionsData = this._setQuestionsData(randomData,entities);
-                    return questionsData;
+                    //let questionsData = this._setQuestionsData(randomData,entities);
+                    //return questionsData;
+                    return responseJson;
                 }
             )
             .catch((error)=>console.error(error))

@@ -5,22 +5,26 @@ import {
     StyleSheet
 }from 'react-native';
 import PropTypes from 'prop-types';
+import QuestionsList from "./QuestionsList";
 import OptionsList from "./OptionsList";
 import PrevNextBtn from "./PrevNextBtn";
 import HttpData from "./HttpData";
 
 // 规定的抽题数量
-const QUESTION_NUM = 8;
+//const QUESTION_NUM = 4;
 
 // 存储抽中的题库数据
 var questionsData = [];
+// 题库数量初始化
+var questionsSum = 0;
 
 export default class StartUp extends Component {
     constructor(props) {
         super(props);
         this.state = {
             currentIndex: 0,
-            currentData: null
+            currentData: null,
+            isModal: true
         };
         this.setCurrentData = this.setCurrentData.bind(this);
         this.setSelectedNum = this.setSelectedNum.bind(this);
@@ -33,7 +37,16 @@ export default class StartUp extends Component {
      * */
     setSelectedNum(num) {
         let index = this.state.currentIndex;
-        questionsData[index]['clicked'] = num;
+        let typeSum = new Set();
+        questionsData.forEach(function (index,item) {
+            typeSum.add(questionsData[index]['type']);
+        });
+        console.log(typeSum);
+        typeSum.forEach(function (index,item) {
+            typeSum[item]++;
+        });
+        questionsData[index]['clickedFlag'] = true;
+        questionsData[index]['clickedNum'] = num;
         this.setCurrentData(index);
     }
 
@@ -48,11 +61,12 @@ export default class StartUp extends Component {
         });
     }
 
-    //get api data before mount
-    componentWillMount() {
+    //get api data after mount
+    componentDidMount() {
         const url = 'https://private-b4dc1-zhang2.apiary-mock.com/questions';
-        HttpData.fetchApiListData(url,QUESTION_NUM).then((result) => {
+        HttpData.fetchApiListData(url).then((result) => {
             questionsData = result;
+            questionsSum = questionsData.length;
             this.setCurrentData(this.state.currentIndex);
         },(e) => {
             // error
@@ -72,14 +86,16 @@ export default class StartUp extends Component {
 
     //绘制展示数据的界面
     renderItem(data) {
-        let clickedFlag = data['clicked'];
+        let clickedFlag = data['clickedFlag'];
+        let clickedNum = data['clickedNum'];
         return (
             <View style={ styles.container }>
-                <Text style={ styles.currentNum }>{ this.state.currentIndex+1 }/{ QUESTION_NUM }</Text>
+                <Text style={ styles.currentNum }>{ this.state.currentIndex+1 }/{ questionsSum }</Text>
                 <View style={ styles.contents }>
-                    <Text style={ styles.title }>{ data.question }</Text>
-                    <OptionsList style={ styles.options } clickedNum={ clickedFlag } options={ data.options } callbackResetState={ this.setSelectedNum } />
-                    <PrevNextBtn currentIndex={ data.index } lastIndex={ QUESTION_NUM } clickedFlag={ clickedFlag } callback={ this.setCurrentData } />
+                    <Text style={ styles.title }>{ data.title }</Text>
+                    <QuestionsList style={ styles.questions } questions={ data.quetions } />
+                    <OptionsList style={ styles.options } clickedNum={ clickedNum } options={ data.options } callbackResetState={ this.setSelectedNum } />
+                    <PrevNextBtn currentIndex={ this.state.currentIndex } btnSum={ questionsSum } clickedFlag={ clickedFlag } callback={ this.setCurrentData } />
                 </View>
             </View>
         )
@@ -114,9 +130,10 @@ const styles = StyleSheet.create({
 })
 
 StartUp.PropTypes = {
-    currentIndex: PropTypes.number.isRequired, //当前题号
-    currentData: PropTypes.number.isRequired, //当前题的数据(题目，选项)
-    clickedFlag: PropTypes.number.isRequired, //当前题目是否已经回答过
+    currentIndex: PropTypes.number.isRequired, //当前题的index（从0开始）
+    currentData: PropTypes.number.isRequired, //当前题对应的数据
+    clickedFlag: PropTypes.bool, //当前题目是否已经回答过
+    clickedNum: PropTypes.number, //当前题目已经回答过的前提下，记录被选择的选项号
     setSelectedNum: PropTypes.func.isRequired, //响应点击事件，设置选择的选项号
     setCurrentData: PropTypes.func.isRequired //更新当前题目数据
 }

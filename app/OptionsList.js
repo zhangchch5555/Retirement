@@ -28,7 +28,7 @@ export default class OptionsList extends Component {
         return (
             <FlatList
                 data={ options }
-                updateFlag={ clickedNum }
+                clickedNum={ clickedNum }
                 renderItem={ ({item}) => <OptionItem selectedNum={ clickedNum } data={ item }  setActiveOption={ this.setActiveOption } /> }
             />
         )
@@ -36,8 +36,8 @@ export default class OptionsList extends Component {
 }
 
 OptionsList.PropTypes = {
-    clickedNum: PropTypes.number.isRequired, //选项集合中被选中过的选项号
     options: PropTypes.object.isRequired, //当前题对应的所有的选项集合
+    clickedNum: PropTypes.number, //当前题已经回答过的前提下，记录被选择的选项号
     setActiveOption: PropTypes.func.isRequired, //响应选项组件点击事件，回调
     callbackResetState: PropTypes.func.isRequired //回调，重新渲染各个选项组件
 }

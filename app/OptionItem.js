@@ -12,13 +12,13 @@ export default class OptionItem extends Component {
         super(props);
     }
 
-    changeSelectedItem(num) {
+    changeSelectedItem(num,val) {
         this.props.setActiveOption(num);
     }
 
     render() {
-        let selectedNum = this.props.selectedNum;
         let {num,val,text} = this.props.data;
+        let selectedNum = this.props.selectedNum;
         return (
             <View style = { [styles.base,num == selectedNum ? styles.active : ''] }>
                 <TouchableHighlight
@@ -40,8 +40,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 10,
         padding: 5,
-        margin: 5,
-        textAlign: 'center'
+        margin: 5
     },
     active: {
         opacity: 0.6,
@@ -55,8 +54,8 @@ const styles = StyleSheet.create({
 })
 
 OptionItem.PropTypes = {
-    selectedNum: PropTypes.number.isRequired, //选项中被选中的选项号
     data: PropTypes.object.isRequired, //选项数据
+    selectedNum: PropTypes.number.isRequired, //选项中被选中的选项号
     text: PropTypes.string.isRequired, //选项的文本内容
     num: PropTypes.number.isRequired, //选项的编号
     val: PropTypes.number.isRequired, //选项的分值
