@@ -5,7 +5,6 @@ import {
     StyleSheet,
     Button
 } from 'react-native';
-import Result from "./Result";
 import PropTypes from 'prop-types';
 
 // 按钮组件
@@ -29,9 +28,17 @@ export default class PrevNextBtn extends Component {
         }
     }
 
-    showModel() {
-        console.log(this.props);
-        this.props.setmodal();
+    toResultpage(typeSum,navigation) {
+        let sum = {};
+        typeSum.forEach(function (index) {
+            sum[index] = 0;
+        });
+        typeSum.forEach(function (item) {
+            for(let index in typeSum[item]) {
+                sum[item] = sum[item] + typeSum[item][index];
+            }
+        });
+        navigation.navigate('PageB',{ sum: sum });
     }
 
     /**
@@ -41,7 +48,7 @@ export default class PrevNextBtn extends Component {
      * @params bool 当前按钮是否点击过FLag
      * @return render 渲染结果
      * */
-    rendPrevNextBtn(currentIndex,lastIndex,clickedFlag) {
+    rendPrevNextBtn(currentIndex,lastIndex,clickedFlag,typeSum) {
         switch(currentIndex) {
             case 0:
                 return (
@@ -53,6 +60,7 @@ export default class PrevNextBtn extends Component {
                     </View>
                 );
             case lastIndex:
+                const navigation = this.props.navigation;
                 return (
                     <View style={ styles.btnBox }>
                         <Button
@@ -62,7 +70,7 @@ export default class PrevNextBtn extends Component {
                         <Button
                             title="测试"
                             color="#ffffff"
-                            onPress={ () => this.showModel() } />
+                            onPress={ () => this.toResultpage(typeSum,navigation) } />
                     </View>
                 );
             default :
@@ -86,7 +94,8 @@ export default class PrevNextBtn extends Component {
         let currentIndex = this.props.currentIndex;
         let lastIndex = this.props.btnSum-1;
         let clickedFlag = this.props.clickedFlag;
-        return this.rendPrevNextBtn(currentIndex,lastIndex,clickedFlag);
+        let typeSum = this.props.typeSum;
+        return this.rendPrevNextBtn(currentIndex,lastIndex,clickedFlag,typeSum);
     }
 }
 

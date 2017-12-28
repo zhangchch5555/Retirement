@@ -18,6 +18,8 @@ var questionsData = [];
 // 题库数量初始化
 var questionsSum = 0;
 
+var typeSum = new Set();
+
 export default class StartUp extends Component {
     constructor(props) {
         super(props);
@@ -33,21 +35,26 @@ export default class StartUp extends Component {
     /**
      * 记录已经选择的题目的选项号
      * @params num number 选项号
+     * @params num value 选项号对应的值
      * @return setQuestionsData array 当前题目数据
      * */
-    setSelectedNum(num) {
+    setSelectedNum(num,value) {
         let index = this.state.currentIndex;
-        let typeSum = new Set();
-        questionsData.forEach(function (index,item) {
-            typeSum.add(questionsData[index]['type']);
-        });
-        console.log(typeSum);
-        typeSum.forEach(function (index,item) {
-            typeSum[item]++;
-        });
+        let type = questionsData[index]['type'];
         questionsData[index]['clickedFlag'] = true;
+        console.log(questionsData);
         questionsData[index]['clickedNum'] = num;
+        typeSum[type][index] = value;
         this.setCurrentData(index);
+    }
+
+    initTypeSum() {
+        questionsData.forEach(function (item) {
+            typeSum.add(item['type']);
+            for(type of typeSum){
+                typeSum[type] = {};
+            }
+        });
     }
 
     /**
@@ -67,6 +74,7 @@ export default class StartUp extends Component {
         HttpData.fetchApiListData(url).then((result) => {
             questionsData = result;
             questionsSum = questionsData.length;
+            this.initTypeSum();
             this.setCurrentData(this.state.currentIndex);
         },(e) => {
             // error
@@ -76,6 +84,7 @@ export default class StartUp extends Component {
     //render
     render() {
         let data = this.state.currentData;
+        console.log(data);
         if (data) {
             return this.renderItem(data);
         }
@@ -95,7 +104,7 @@ export default class StartUp extends Component {
                     <Text style={ styles.title }>{ data.title }</Text>
                     <QuestionsList style={ styles.questions } questions={ data.quetions } />
                     <OptionsList style={ styles.options } clickedNum={ clickedNum } options={ data.options } callbackResetState={ this.setSelectedNum } />
-                    <PrevNextBtn currentIndex={ this.state.currentIndex } btnSum={ questionsSum } clickedFlag={ clickedFlag } callback={ this.setCurrentData } />
+                    <PrevNextBtn currentIndex={ this.state.currentIndex } btnSum={ questionsSum } clickedFlag={ clickedFlag } typeSum={ typeSum } callback={ this.setCurrentData } navigation={ this.props.navigation } />
                 </View>
             </View>
         )

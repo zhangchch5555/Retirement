@@ -12,17 +12,17 @@ export default class OptionItem extends Component {
         super(props);
     }
 
-    changeSelectedItem(num,val) {
-        this.props.setActiveOption(num);
+    changeSelectedItem(num,value) {
+        this.props.setActiveOption(num,value);
     }
 
     render() {
-        let {num,val,text} = this.props.data;
+        let {num,value,text} = this.props.data;
         let selectedNum = this.props.selectedNum;
         return (
             <View style = { [styles.base,num == selectedNum ? styles.active : ''] }>
                 <TouchableHighlight
-                    onPress={ () => this.changeSelectedItem(num,val) }
+                    onPress={ () => this.changeSelectedItem(num,value) }
                     underlayColor="rgb(210, 230,255)"
                     activeOpacity={0}
                 >

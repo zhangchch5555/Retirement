@@ -17,8 +17,8 @@ export default class OptionsList extends Component {
      * 响应选项组件点击事件，回调，实现重新渲染
      * @params num number 被选中的选项的编号
      * */
-    setActiveOption(num) {
-        this.props.callbackResetState(num);
+    setActiveOption(num,value) {
+        this.props.callbackResetState(num,value);
     }
 
     //绘制界面

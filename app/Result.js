@@ -6,50 +6,57 @@ import {
     StyleSheet,
     TouchableOpacity
 }from 'react-native';
+import { Table, TableWrapper, Row, Rows, Col, Cols, Cell } from 'react-native-table-component';
 import PropTypes from 'prop-types';
 
 export default class Result extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            isModal: true
-        }
-    }
-
-    showModal() {
-        this.setState({
-            isModal:true
-        })
-    }
-
-    onRequestClose() {
-        this.setState({
-            isModal:false
-        })
     }
 
     render() {
+        let navigation = this.props.navigation.state.params.sum;
+        let tableHead = Object.keys(navigation);
+        tableHead.unshift('');
+        tableHead.push('sum');
+        const DEFAULT_VAL = [1,1,1,1,1,1];
+        let val = Object.values(navigation);
+        let sum = 0;
+        for(let item of val){
+            sum = sum+item;
+        }
+        val.push(sum);
+        const tableData = [val,DEFAULT_VAL];
+        const tableTitle = ['Title', 'Title2'];
         return (
-            <Modal
-                animationType='slide'           // 从底部滑入
-                transparent={false}             // 不透明
-                visible={this.state.isModal}    // 根据isModal决定是否显示
-                onRequestClose={() => {this.onRequestClose()}}  // android必须实现
-            >
-                <View>
-                    <TouchableOpacity
-                        onPress={() => {{
-                            this.setState({
-                                isModal:false
-                            })
-                        }}}
-                    >
-                        <Text>关闭页面</Text>
-                    </TouchableOpacity>
-                </View>
-            </Modal>
+            <View>
+                <Table style={{ paddingTop: 60 }}>
+                    <Row data={ tableHead } flexArr={[1,1,1,1,1,1,1]} style={styles.head} textStyle={styles.text} />
+                    <TableWrapper style={{flexDirection: 'row'}}>
+                        <Col data={tableTitle} style={styles.title} heightArr={[28,28]} textStyle={styles.text} />
+                        <Rows data={tableData} flexArr={[1,1,1,1,1,1]} style={styles.row} />
+                    </TableWrapper>
+                </Table>
+            </View>
         )
     }
 }
 
+const styles = StyleSheet.create({
+    head: {
+        height: 40,
+        backgroundColor: '#f1f8ff'
+    },
+    title: {
+        flex: 1,
+        backgroundColor: '#f6f8fa'
+    },
+    row: {
+        height: 28,
+        textAlign: 'center'
+    },
+    text: {
+        textAlign: 'center'
+    }
+})
 
